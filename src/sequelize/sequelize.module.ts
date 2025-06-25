@@ -9,3 +9,10 @@ import { SequelizeService } from './sequelize.service';
   providers: [SequelizeService],
 })
 export class SequelizeModule {}
+
+/**
+ * install umzug -> "umzug": "^3.8.2"
+ * include:
+ *  "migration:generate": "ts-node src/sequelize/generate-migration.ts",
+ *   "migrate": "ts-node src/sequelize/migration-runner.ts"
+ */
