@@ -1,11 +1,17 @@
-import { IsEnum, IsNotEmpty, Length, Matches } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  Length,
+  Matches,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { UserRole } from 'src/user/enums/user-role.enum';
 export class UserSignupDto {
-  @IsNotEmpty()
+  @IsOptional()
   firstName: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   lastName: string;
 
   @IsNotEmpty()

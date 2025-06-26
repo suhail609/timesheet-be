@@ -23,10 +23,10 @@ export class User extends Model<
   })
   declare id?: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: true })
   declare firstName: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: true })
   declare lastName: string;
 
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
