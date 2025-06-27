@@ -71,7 +71,7 @@ export class TimesheetController {
   @UseGuards(UserRolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get('subordinate/all')
-  async getAllSubordianteTimesheet(@Req() req: RequestWithUser) {
+  async getAllSubordinateTimesheet(@Req() req: RequestWithUser) {
     const timesheets = await this.timesheetService.getAllSubordinatesTimesheets(
       {
         managerId: req.user.id,
