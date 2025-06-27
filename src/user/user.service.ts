@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { UserAuthDto } from 'src/auth/dto/user-auth.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { UserRole } from './enums/user-role.enum';
 
 @Injectable()
 export class UserService {
@@ -73,5 +74,13 @@ export class UserService {
       });
       return newUser;
     }
+  }
+  async getAllManagers() {
+    const managers = await this.userModel.findAll({
+      where: { role: UserRole.MANAGER },
+      attributes: ['id', 'firstName', 'lastName', 'email'],
+    });
+
+    return managers;
   }
 }
