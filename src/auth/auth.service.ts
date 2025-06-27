@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -81,6 +82,23 @@ export class AuthService {
         email: user.email,
         role: user.role,
       },
+    };
+  }
+
+  async getProfile(user: AuthenticatedUser) {
+    const existingUser = await this.userService.findOne({
+      email: user.email,
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException('User Not Found');
+    }
+
+    return {
+      firstName: existingUser.firstName,
+      lastName: existingUser.lastName,
+      email: existingUser.email,
+      role: existingUser.role,
     };
   }
 }
