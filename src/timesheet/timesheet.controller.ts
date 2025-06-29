@@ -1,21 +1,24 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { RequestWithUser } from 'src/auth/interface/request-with-user.interface';
-import { CreateTimesheetDto } from './dto/create-timesheet.dto';
-import { TimesheetService } from './timesheet.service';
+import { UserRoles } from 'src/auth/decorators/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { UserRolesGuard } from 'src/auth/guards/user-roles/user-roles.guard';
+import { RequestWithUser } from 'src/auth/interface/request-with-user.interface';
 import { UserRole } from 'src/user/enums/user-role.enum';
-import { UserRoles } from 'src/auth/decorators/roles.decorator';
+import { CreateTimesheetDto } from './dto/create-timesheet.dto';
+import { SubmitTimesheetsDto } from './dto/submit-timesheet.dto';
 import { UpdateTimesheetDto } from './dto/update-timesheet.dto';
+import { TimesheetService } from './timesheet.service';
 
 @Controller('timesheet')
 export class TimesheetController {
@@ -41,6 +44,24 @@ export class TimesheetController {
   @UserRoles(UserRole.EMPLOYEE)
   @UseGuards(UserRolesGuard)
   @UseGuards(JwtAuthGuard)
+  @Put('update/:id')
+  async replaceTimesheet(
+    @Body() updateTimesheetDto: UpdateTimesheetDto,
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ) {
+    const updatedTimesheet = await this.timesheetService.replace({
+      userId: req.user.id,
+      id: id,
+      ...updateTimesheetDto,
+    });
+
+    return updatedTimesheet;
+  }
+
+  @UserRoles(UserRole.EMPLOYEE, UserRole.MANAGER)
+  @UseGuards(UserRolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Patch('update/:id')
   async updateTimesheet(
     @Body() updateTimesheetDto: UpdateTimesheetDto,
@@ -48,9 +69,38 @@ export class TimesheetController {
     @Req() req: RequestWithUser,
   ) {
     const updatedTimesheet = await this.timesheetService.update({
-      userId: req.user.id,
+      userId: req.user.role === UserRole.EMPLOYEE ? req.user.id : undefined,
       id: id,
       ...updateTimesheetDto,
+    });
+
+    return updatedTimesheet;
+  }
+
+  @UserRoles(UserRole.EMPLOYEE)
+  @UseGuards(UserRolesGuard)
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteTimesheet(
+    // @Body() updateTimesheetDto: UpdateTimesheetDto,
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ) {
+    const response = await this.timesheetService.delete(req.user.id, id);
+    return response;
+  }
+
+  @UserRoles(UserRole.EMPLOYEE)
+  @UseGuards(UserRolesGuard)
+  @UseGuards(JwtAuthGuard)
+  @Patch('submit')
+  async submitTimesheets(
+    @Body() submitTimesheetsDto: SubmitTimesheetsDto,
+    @Req() req: RequestWithUser,
+  ) {
+    const updatedTimesheet = await this.timesheetService.submit({
+      userId: req.user.id,
+      timesheetIds: submitTimesheetsDto.timesheetIds,
     });
 
     return updatedTimesheet;
