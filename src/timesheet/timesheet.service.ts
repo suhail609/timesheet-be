@@ -9,6 +9,7 @@ import {
   UpdateTimesheet,
   UpdateTimesheetField,
 } from './types/update-timesheet.type';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class TimesheetService {
@@ -120,6 +121,12 @@ export class TimesheetService {
       where: {
         userId: subordinateIds,
       },
+      include: [
+        {
+          model: User,
+          attributes: ['email'],
+        },
+      ],
     });
     //TODO: include name of the timesheet employee in the timesheet
     return timesheets;
