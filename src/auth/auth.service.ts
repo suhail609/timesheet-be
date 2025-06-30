@@ -11,6 +11,7 @@ import { UserService } from 'src/user/user.service';
 import { UserAuthDto } from './dto/user-auth.dto';
 import { AuthenticatedUser } from './types/authenticated-user.type';
 import { JwtPayload } from './types/jwt-payload.type';
+import { UserRole } from 'src/user/enums/user-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -36,6 +37,15 @@ export class AuthService {
     const existingUser = await this.userService.findOne({
       email: userAuthDto.email,
     });
+
+    if (userAuthDto.reportingManagerId) {
+      const existingManager = await this.userService.findOne({
+        id: userAuthDto.reportingManagerId,
+      });
+
+      if (!existingManager || existingManager.role !== UserRole.MANAGER)
+        throw new BadRequestException('Manager does not exist');
+    }
 
     if (existingUser) {
       throw new BadRequestException('User already exists');

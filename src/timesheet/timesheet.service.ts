@@ -120,6 +120,9 @@ export class TimesheetService {
     const timesheets = await this.timesheetModel.findAll({
       where: {
         userId: subordinateIds,
+        status: {
+          [Op.ne]: TimesheetStatus.DRAFT,
+        },
       },
       include: [
         {
@@ -128,7 +131,6 @@ export class TimesheetService {
         },
       ],
     });
-    //TODO: include name of the timesheet employee in the timesheet
     return timesheets;
   }
 }
