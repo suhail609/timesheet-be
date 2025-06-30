@@ -1,6 +1,5 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { JwtAuthGuard } from './auth/guards/jwt-auth/jwt-auth.guard';
 
 @Controller()
 export class AppController {
@@ -11,7 +10,6 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('app-data')
   async getAppData() {
     return await this.appService.getAppData();
