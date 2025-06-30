@@ -8,6 +8,6 @@ export const sequelizeConfig: SequelizeModuleOptions = {
   password: process.env.DB_PASSWORD || 'postgres',
   database: process.env.DB_NAME || 'time-sheet',
   autoLoadModels: true,
-  synchronize: true, // disable this in production
+  synchronize: true, //FIXME: disable this in production
   logging: false,
 };
