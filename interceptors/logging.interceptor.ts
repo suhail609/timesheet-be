@@ -18,7 +18,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const { method, originalUrl, headers, ip, body } = request;
     const now = Date.now();
 
-    if (method === 'POST') {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
       //TODO: remove authentication request password
       return next.handle().pipe(
         tap((data) => {
