@@ -2,21 +2,24 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { Sequelize } from 'sequelize'; // raw Sequelize instance for migrations
+import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
 import { sequelizeConfig } from './config/sequelize.config';
 
-async function runMigrations() {
-  const sequelize = new Sequelize(sequelizeConfig);
+//TODO: Fix type errors here
 
-  const umzug = new Umzug({
+const config = sequelizeConfig(); // This returns SequelizeModuleOptions
+
+async function getUmzug(sequelize: Sequelize) {
+  return new Umzug({
     migrations: {
-      glob: 'src/sequelize/migrations/*.ts',
+      glob:
+        process.env.NODE_ENV === 'production'
+          ? 'dist/sequelize/migrations/*.js'
+          : 'src/sequelize/migrations/*.ts',
       resolve: ({ name, path, context }) => {
-        if (!path) {
-          throw new Error(`Migration path is undefined for migration ${name}`);
-        }
-        const migration = require(path); // Non-null assertion not needed with above guard
+        if (!path) throw new Error(`Migration path is undefined for ${name}`);
+        const migration = require(path);
         return {
           name,
           up: async () => migration.up(context),
@@ -24,14 +27,49 @@ async function runMigrations() {
         };
       },
     },
-    context: sequelize.getQueryInterface(), // This is the QueryInterface
+    context: sequelize.getQueryInterface(),
     storage: new SequelizeStorage({ sequelize }),
     logger: console,
   });
+}
+
+async function runMigrations() {
+  const sequelize = new Sequelize(
+    config.database!,
+    config.username!,
+    config.password,
+    {
+      host: config.host,
+      port: config.port,
+      dialect: config.dialect,
+      logging: config.logging,
+    },
+  );
 
   await sequelize.authenticate();
-  await umzug.up();
-  console.log('✅ Migrations executed successfully.');
+  const umzug = await getUmzug(sequelize);
+
+  const command = process.argv[2];
+
+  switch (command) {
+    case 'up':
+      await umzug.up();
+      console.log('✅ Migrations executed');
+      break;
+    case 'down':
+      await umzug.down();
+      console.log('↩️  Rolled back one migration');
+      break;
+    case 'pending':
+      const pending = await umzug.pending();
+      console.log('🕓 Pending migrations:');
+      pending.forEach((m) => console.log(`- ${m.name}`));
+      break;
+    default:
+      console.log(`❓ Unknown command: ${command}`);
+      console.log(`Usage: ts-node migration-runner.ts [up|down|pending]`);
+  }
+
   await sequelize.close();
 }
 
