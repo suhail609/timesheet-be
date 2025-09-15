@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   SequelizeModule as Sequelize,
   SequelizeModuleOptions,
 } from '@nestjs/sequelize';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   POSTGRES_CONFIG_KEY,
   sequelizeConfig,

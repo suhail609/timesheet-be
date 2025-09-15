@@ -7,7 +7,8 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { RequestLog } from 'src/logger/schema/request-log.schema';
+import { RequestLog } from '../src/logger/schema/request-log.schema';
+// import { RequestLog } from 'src/logger/schema/request-log.schema';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {

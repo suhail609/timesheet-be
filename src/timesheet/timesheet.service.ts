@@ -99,8 +99,17 @@ export class TimesheetService {
     return `Deleted ${deletedCount} timesheet(s)`;
   }
 
-  async getAllTimesheets({ userId }: { userId: string }): Promise<Timesheet[]> {
+  async getAllTimesheetsOfUser({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<Timesheet[]> {
     const timesheets = await this.timesheetModel.findAll({ where: { userId } });
+    return timesheets;
+  }
+
+  async getAllTimesheets(): Promise<Timesheet[]> {
+    const timesheets = await this.timesheetModel.findAll();
     return timesheets;
   }
 

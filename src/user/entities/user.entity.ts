@@ -8,8 +8,11 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { UserRole } from 'src/user/enums/user-role.enum';
-import { Timesheet } from 'src/timesheet/entities/timesheet.entity';
+import { UserRole } from '../enums/user-role.enum';
+import { Timesheet } from '../../timesheet/entities/timesheet.entity';
+// import { Timesheet } from '../../timesheet/entities/timesheet.entity';
+// import { UserRole } from 'src/user/enums/user-role.enum';
+// import { Timesheet } from 'src/timesheet/entities/timesheet.entity';
 
 @Table({ tableName: 'users', timestamps: true })
 export class User extends Model<

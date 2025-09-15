@@ -8,11 +8,12 @@ import {
   PrimaryKey,
   Default,
 } from 'sequelize-typescript';
-import { User } from 'src/user/entities/user.entity';
+// import { User } from 'src/user/entities/user.entity';
 import { TimesheetStatus } from '../enums/timesheet-status.enum';
 import { Activity } from '../enums/activity.enum';
 import { Project } from '../enums/project.enum';
 import { InferAttributes, InferCreationAttributes } from 'sequelize';
+import { User } from '../../user/entities/user.entity';
 
 @Table({ tableName: 'timesheets', timestamps: true })
 export class Timesheet extends Model<

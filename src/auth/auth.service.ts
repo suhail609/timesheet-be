@@ -6,12 +6,15 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { comparePasswords, hashPassword } from 'src/common/utils/hashing.util';
-import { User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
+// import { User } from 'src/user/entities/user.entity';
+// import { UserService } from 'src/user/user.service';
 import { UserAuthDto } from './dto/user-auth.dto';
 import { AuthenticatedUser } from './types/authenticated-user.type';
 import { JwtPayload } from './types/jwt-payload.type';
-import { UserRole } from 'src/user/enums/user-role.enum';
+import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
+import { UserRole } from '../user/enums/user-role.enum';
+// import { UserRole } from 'src/user/enums/user-role.enum';
 
 @Injectable()
 export class AuthService {

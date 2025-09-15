@@ -59,7 +59,7 @@ export class TimesheetController {
     return updatedTimesheet;
   }
 
-  @UserRoles(UserRole.EMPLOYEE, UserRole.MANAGER)
+  @UserRoles(UserRole.EMPLOYEE, UserRole.MANAGER, UserRole.ADMIN)
   @UseGuards(UserRolesGuard)
   @UseGuards(JwtAuthGuard)
   @Patch('update/:id')
@@ -109,11 +109,20 @@ export class TimesheetController {
   @UserRoles(UserRole.EMPLOYEE)
   @UseGuards(UserRolesGuard)
   @UseGuards(JwtAuthGuard)
-  @Get('all')
-  async getAllTimesheets(@Req() req: RequestWithUser) {
-    const timesheets = await this.timesheetService.getAllTimesheets({
+  @Get('employee/all')
+  async getAllTimesheetsOfEmployee(@Req() req: RequestWithUser) {
+    const timesheets = await this.timesheetService.getAllTimesheetsOfUser({
       userId: req.user.id,
     });
+    return timesheets;
+  }
+
+  @UserRoles(UserRole.ADMIN)
+  @UseGuards(UserRolesGuard)
+  @UseGuards(JwtAuthGuard)
+  @Get('all')
+  async getAllTimesheets(@Req() req: RequestWithUser) {
+    const timesheets = await this.timesheetService.getAllTimesheets();
     return timesheets;
   }
 
