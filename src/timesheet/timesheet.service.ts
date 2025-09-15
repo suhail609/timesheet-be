@@ -139,6 +139,7 @@ export class TimesheetService {
           attributes: ['email'],
         },
       ],
+      order: [['createdAt', 'DESC']],
     });
     return timesheets;
   }
