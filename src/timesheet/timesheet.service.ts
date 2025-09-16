@@ -126,7 +126,6 @@ export class TimesheetService {
       activityType?: string;
     };
   }): Promise<Timesheet[]> {
-
     const subordinates = await this.userService.findAllSubordinates({
       managerId,
     });
@@ -139,10 +138,16 @@ export class TimesheetService {
     const timesheets = await this.timesheetModel.findAll({
       where: {
         userId: subordinateIds,
-        ...(filter?.fromDate && { date: { [Op.gte]: filter.fromDate } }),
-        ...(filter?.toDate && { date: { [Op.lte]: filter.toDate } }),
         ...(filter?.project && { project: filter.project }),
         ...(filter?.activityType && { activityType: filter.activityType }),
+        ...(filter?.fromDate || filter?.toDate
+          ? {
+              date: {
+                ...(filter?.fromDate && { [Op.gte]: filter.fromDate }),
+                ...(filter?.toDate && { [Op.lte]: filter.toDate }),
+              },
+            }
+          : {}),
         ...(filter?.search && {
           [Op.or]: [
             { description: { [Op.iLike]: `%${filter.search}%` } },
