@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { RequestWithUser } from 'src/auth/interface/request-with-user.interface'
 import { UserRole } from 'src/user/enums/user-role.enum';
 import { CreateTimesheetDto } from './dto/create-timesheet.dto';
 import { SubmitTimesheetsDto } from './dto/submit-timesheet.dto';
+import { TimesheetQueryDto } from './dto/timesheet-query.dto';
 import { UpdateTimesheetDto } from './dto/update-timesheet.dto';
 import { TimesheetService } from './timesheet.service';
 
@@ -130,10 +132,14 @@ export class TimesheetController {
   @UseGuards(UserRolesGuard)
   @UseGuards(JwtAuthGuard)
   @Get('subordinate/all')
-  async getAllSubordinateTimesheet(@Req() req: RequestWithUser) {
+  async getAllSubordinateTimesheet(
+    @Req() req: RequestWithUser,
+    @Query() query: TimesheetQueryDto,
+  ) {
     const timesheets = await this.timesheetService.getAllSubordinatesTimesheets(
       {
         managerId: req.user.id,
+        filter: query,
       },
     );
     return timesheets;

@@ -71,7 +71,7 @@ export class TimesheetService {
   }): Promise<Timesheet[]> {
     const whereCondition = { userId: userId, id: { [Op.in]: timesheetIds } };
     const [count, updatedTimesheets] = await this.timesheetModel.update(
-      { status: TimesheetStatus.SUBMITTED },
+      { status: TimesheetStatus.SUBMITTED, submittedAt: new Date() },
       {
         where: whereCondition,
         returning: true,
@@ -115,9 +115,18 @@ export class TimesheetService {
 
   async getAllSubordinatesTimesheets({
     managerId,
+    filter,
   }: {
     managerId: string;
+    filter?: {
+      fromDate?: string;
+      toDate?: string;
+      search?: string;
+      project?: string;
+      activityType?: string;
+    };
   }): Promise<Timesheet[]> {
+
     const subordinates = await this.userService.findAllSubordinates({
       managerId,
     });
@@ -126,9 +135,22 @@ export class TimesheetService {
 
     const subordinateIds = subordinates.map((u) => u.id) as string[];
 
+    //TODO: instead of inline find a readable and efficient better method
     const timesheets = await this.timesheetModel.findAll({
       where: {
         userId: subordinateIds,
+        ...(filter?.fromDate && { date: { [Op.gte]: filter.fromDate } }),
+        ...(filter?.toDate && { date: { [Op.lte]: filter.toDate } }),
+        ...(filter?.project && { project: filter.project }),
+        ...(filter?.activityType && { activityType: filter.activityType }),
+        ...(filter?.search && {
+          [Op.or]: [
+            { description: { [Op.iLike]: `%${filter.search}%` } },
+            { '$user.firstName$': { [Op.iLike]: `%${filter.search}%` } },
+            { '$user.lastName$': { [Op.iLike]: `%${filter.search}%` } },
+            { '$user.email$': { [Op.iLike]: `%${filter.search}%` } },
+          ],
+        }),
         status: {
           [Op.ne]: TimesheetStatus.DRAFT,
         },
@@ -136,7 +158,7 @@ export class TimesheetService {
       include: [
         {
           model: User,
-          attributes: ['email'],
+          attributes: ['email', 'firstName', 'lastName'],
         },
       ],
       order: [['createdAt', 'DESC']],
